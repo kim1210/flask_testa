@@ -1,0 +1,30 @@
+<!--네비게이션 바 p.114-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <a class="navbar-brand" href="{{ url_for('main.index') }}">Home</a>
+    
+    <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target ="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+        <!--p.155 로그인이 되어 있다면-->
+        {% if g.user %}
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('auth.logout') }}"> {{ g.user.username }} (로그아웃) </a>
+            </li>
+        </ul>
+
+        <!--로그인 정보가 없다면-->
+        {% else %}
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('auth.signup') }}">회원가입</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('auth.login') }}">로그인</a>
+            </li>
+        </ul>
+        {% endif %}
+    </div>
+</nav>

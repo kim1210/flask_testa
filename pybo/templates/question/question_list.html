@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container my-3">
+    <table class = "table">
+        <thead>
+            <tr class="thead-dark">
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성일시</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if question_list %}
+            {% for question in question_list.items %}
+            <tr>
+                <!--번호 = 전체 개시물 개수 - (현재 페이지-1)*페이지당 게시물 개수 - 나열 인덱스 -->
+                <td>{{ question_list.total - ((question_list.page-1)*question_list.per_page) - loop.index0 }}</td>
+                <td>
+                    <!--하드코딩 되어 있는 <a href="/detail/{{ question.id }}/"> ~ </a> 를 아래의 코드로 수정함. -->
+                    <a href="{{ url_for('question.detail', question_id = question.id)}}">{{question.subject}}</a>
+                    <!--질문에 달린 답변의 개수 표시(p.138)-->
+                    {% if question.answer_set|length >0 %}
+                    <span class="text-danger small ml-2">{{ question.answer_set|length }}</span>
+                    {% endif %}
+
+                </td>
+                <td>{{question.create_date|datetime}}</td>
+                    <!--datetime은 __init__.py에서 정의됨 p.132 -->
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="3">질문이 없습니다.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- 페이징 처리 시작 -->
+    <ul class="pagination justify-content-center">
+        <!--이전 페이지-->
+        {% if question_list.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ question_list.prev_num }}">이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+        </li>
+        {% endif %}
+
+        <!--페이지 index-->
+        {% for page_num in question_list.iter_pages() %}
+            <!--만약 페이지 번호가 있다면-->
+            {% if page_num %}
+                <!--현재 페이지가 아닌 번호는-->
+                {% if page_num != question_list.page %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                </li>
+                <!--현재 페이지에서는-->
+                {% else %}
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="#">{{ page_num }}</a>
+                </li>
+                {% endif %}
+            {%else%}
+                <li class="disabled">
+                    <a class="page-link" href="#">...</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        <!--다음 페이지-->
+        {% if question_list.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ question_list.next_num }}">다음</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+        </li>
+        {% endif %}
+    </ul>
+    <!--페이징 처리 끝-->
+    <a href="{{ url_for('question.create') }}" class = "btn btn-primary"> 질문 등록하기 </a>
+</div>
+{% endblock %}

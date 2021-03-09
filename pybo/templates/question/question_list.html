@@ -4,19 +4,26 @@
 <div class="container my-3">
     <table class = "table">
         <thead>
-            <tr class="thead-dark">
+            <tr class="text-center thead-dark">
                 <th>번호</th>
-                <th>제목</th>
+                <th>추천</th>
+                <th style="width:50%">제목</th>
+                <th>글쓴이</th>
                 <th>작성일시</th>
             </tr>
         </thead>
         <tbody>
             {% if question_list %}
             {% for question in question_list.items %}
-            <tr>
+            <tr class="text-center">
                 <!--번호 = 전체 개시물 개수 - (현재 페이지-1)*페이지당 게시물 개수 - 나열 인덱스 -->
                 <td>{{ question_list.total - ((question_list.page-1)*question_list.per_page) - loop.index0 }}</td>
                 <td>
+                    {% if question.voter|length >0 %}
+                    <span class="badge badge-warning px-2 py-1">{{ question.voter|length }}</span>
+                    {% endif %}
+                </td>
+                <td class="text-left">
                     <!--하드코딩 되어 있는 <a href="/detail/{{ question.id }}/"> ~ </a> 를 아래의 코드로 수정함. -->
                     <a href="{{ url_for('question.detail', question_id = question.id)}}">{{question.subject}}</a>
                     <!--질문에 달린 답변의 개수 표시(p.138)-->
@@ -25,6 +32,7 @@
                     {% endif %}
 
                 </td>
+                <td>{{ question.user.username }}</td> <!--글쓴이 추가(p.179)-->
                 <td>{{question.create_date|datetime}}</td>
                     <!--datetime은 __init__.py에서 정의됨 p.132 -->
             </tr>

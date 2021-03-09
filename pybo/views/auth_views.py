@@ -6,6 +6,8 @@ from pybo import db
 from pybo.forms import UserCreateForm, UserLoginForm
 from pybo.models import User
 
+import functools
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/signup/', methods=('GET', 'POST'))
@@ -91,3 +93,13 @@ def logout():
 #로그아웃 함수에는 세션의 모든 값을 삭제할 수 있도록 session.clear()를 추가
 #따라서 session에 저장된 user_id는 삭제될 것이며, 
 #앞서 작성한 load_logged_in_user 함수에서 session의 값을 읽을 수 없으므로 g.user는 None이 될 것이다.
+
+# p.174 
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_views(**kwargs):
+        #로그인이 안 되어 있으면 로그인 창으로 ㄱㄱ ..
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+        return view(**kwargs)
+    return wrapped_views
